@@ -94,10 +94,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Load saved data on page load
+            // Load  data 
             displayData();
 
-            // Form submission
+            // Form submit
             $('#customerForm').submit(function(event) {
                 event.preventDefault();
 
@@ -113,7 +113,7 @@
                     gender.push('Female');
                 }
 
-                // Save data to local storage
+                // Save form data 
                 var customerData = {
                     name: name,
                     employeeId: employeeId,
@@ -124,10 +124,10 @@
                 savedData.push(customerData);
                 localStorage.setItem('savedData', JSON.stringify(savedData));
 
-                // Display data in table
+                // Display data table
                 displayData();
 
-                // Clear form fields
+                // Clear form 
                 $('#name').val('');
                 $('#employeeId').val('');
                 $('#city').val('');
@@ -135,7 +135,7 @@
                 $('#female').prop('checked', false);
             });
 
-            // Function to display saved data in table
+            // table data
             function displayData() {
                 var savedData = JSON.parse(localStorage.getItem('savedData')) || [];
                 var tableBody = $('#customerTable tbody');
@@ -152,7 +152,7 @@
                 });
             }
 
-            // Handle edit button click
+            // edit data
             $(document).on('click', '.edit-button', function() {
                 var index = $(this).data('index');
                 var savedData = JSON.parse(localStorage.getItem('savedData')) || [];
@@ -165,7 +165,7 @@
                     $('#male').prop('checked', genders.includes('Male'));
                     $('#female').prop('checked', genders.includes('Female'));
 
-                    // Remove the edited entry from local storage
+                    // edit and remove
                     savedData.splice(index, 1);
                     localStorage.setItem('savedData', JSON.stringify(savedData));
                 }
