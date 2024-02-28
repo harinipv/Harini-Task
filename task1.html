@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Form</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    form {
+        width: 300px;
+        margin: 0 auto;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    input[type="text"], input[type="number"], select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .radioButt {
+    position: relative;
+    display: inline-block;
+    /* padding-left: 20px; */
+    /* margin-bottom: 0; */
+    font-weight: 400;
+    vertical-align: middle;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+    <h2>Customer Information Form</h2>
+    <form id="customerForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Enter Name" required>
+        <label for="employeeId">Employee ID:</label>
+        <input type="number" id="employeeId" placeholder="Enter Employee ID" required>
+        <label for="city">City:</label>
+        <select id="city" required>
+            <option value="" disabled selected>Select City </option>
+            <option value="New York">New York</option>
+            <option value="London">London</option>
+            <option value="Tokyo">Tokyo</option>
+        </select>
+        <div>
+            <label>Gender</label>
+                <input type="radio" id="male" name="gender" value="Male" required>
+                <label for="male" class="radioButt">Male </label>
+                <input type="radio" id="female" name="gender" value="Female" required>
+                <label for="female" class="radioButt">Female</label>
+           </div>
+        <button type="submit">Save</button>
+    </form>
+
+    <h2>Customer Table</h2>
+    <table id="customerTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Employee ID</th>
+                <th>City</th>
+                <th>Gender</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load saved data on page load
+            displayData();
+
+            // Form submission
+            $('#customerForm').submit(function(event) {
+                event.preventDefault();
+
+                // Get form values
+                var name = $('#name').val();
+                var employeeId = $('#employeeId').val();
+                var city = $('#city').val();
+                var gender = [];
+                if ($('#male').is(':checked')) {
+                    gender.push('Male');
+                }
+                if ($('#female').is(':checked')) {
+                    gender.push('Female');
+                }
+
+                // Save data to local storage
+                var customerData = {
+                    name: name,
+                    employeeId: employeeId,
+                    city: city,
+                    gender: gender.join(', ')
+                };
+                var savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+                savedData.push(customerData);
+                localStorage.setItem('savedData', JSON.stringify(savedData));
+
+                // Display data in table
+                displayData();
+
+                // Clear form fields
+                $('#name').val('');
+                $('#employeeId').val('');
+                $('#city').val('');
+                $('#male').prop('checked', false);
+                $('#female').prop('checked', false);
+            });
+
+            // Function to display saved data in table
+            function displayData() {
+                var savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+                var tableBody = $('#customerTable tbody');
+                tableBody.empty();
+                $.each(savedData, function(index, customer) {
+                    var row = '<tr>' +
+                        '<td>' + customer.name + '</td>' +
+                        '<td>' + customer.employeeId + '</td>' +
+                        '<td>' + customer.city + '</td>' +
+                        '<td>' + customer.gender + '</td>' +
+                        '<td><button class="edit-button" data-index="' + index + '">Edit</button></td>' +
+                        '</tr>';
+                    tableBody.append(row);
+                });
+            }
+
+            // Handle edit button click
+            $(document).on('click', '.edit-button', function() {
+                var index = $(this).data('index');
+                var savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+                var customer = savedData[index];
+                if (customer) {
+                    $('#name').val(customer.name);
+                    $('#employeeId').val(customer.employeeId);
+                    $('#city').val(customer.city);
+                    var genders = customer.gender.split(', ');
+                    $('#male').prop('checked', genders.includes('Male'));
+                    $('#female').prop('checked', genders.includes('Female'));
+
+                    // Remove the edited entry from local storage
+                    savedData.splice(index, 1);
+                    localStorage.setItem('savedData', JSON.stringify(savedData));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
